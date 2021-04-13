@@ -1,3 +1,32 @@
+
+# Project Overview
+ -> This is a single page application that implements a search engine for searching Artists and viewing their upcoming events
+ -> This project uses BandsInTown's Public Api whos documentation can be found on this link https://app.swaggerhub.com/apis/Bandsintown/PublicAPI/3.0.0
+ -> Tech stack used for this small project is ReactJs/HTML/SCSS/Bootstrap/Jquery and React Hooks
+
+# Architecture
+-> since this is a ReactJs app, the architecture is coded in components
+-> All the components coded in this app are functional components
+-> The project's code is done cleanly and divided into components, actions, helpers and styles in folder for better readability
+-> The main components renders the search Bar and 2 childs components for Artists and Events
+-> The Artists components gets data from its parent and renders it using bootstrap into a grid
+-> Same goes for the Events component
+
+# Libraries used
+    "react": "^17.0.2",
+    "react-bootstrap": "^1.5.2",
+    "bootstrap": "^4.6.0",
+    "react-spinners": "^0.10.6",
+    "jquery": "^3.6.0",
+    "moment-timezone": "^0.5.33",
+    "node-sass": "^5.0.0",
+    "react-cookie": "^4.0.3",
+
+# You can test this deployed project on the following link
+https://obscure-harbor-77468.herokuapp.com/
+
+# Following is the textbook documentation of Create-React-App 
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
