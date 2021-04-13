@@ -1,0 +1,44 @@
+
+.searchBarWrapper {
+  width: 50%;
+  left: 30%;
+  margin-top: 20px;
+  position: relative;
+  .searchBar {
+    padding: 10px;
+    height: 25%;
+    width: 75%;
+    text-align: center;
+  }
+}
+
+.artistsGridWrapper {
+  margin: 5px;
+  width: 100%;
+  .card {
+    margin-right: 30px;
+    margin-top: 5px;
+    width: 15rem;
+    display: flex;
+    flex-direction: row;
+  }
+  .img {
+    height: 50px;
+    width: 50px;
+    border-radius: 25px;
+    margin-left: 20px;
+    margin-top: 10%;
+    position: relative;
+  }
+  .link {
+    text-align: center;
+    margin-left: 6px;
+    font-size: 140%;
+  }
+}
+
+.eventCard {
+  width: 15rem;
+  margin-right: 30px;
+  margin-top: 10%
+}

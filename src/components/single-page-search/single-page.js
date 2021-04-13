@@ -1,90 +1,102 @@
+import $ from 'jquery'
+import { css } from "@emotion/core";
+import styles from '../../styles/single-page-search.module.scss'
 import React, {useState, useEffect} from 'react';
-import {
-  FormGroup,
-  FormControl,
-  Container,
-  Row,
-  Col,
-  Card, ListGroup,  ListGroupItem} from "react-bootstrap";
+import {FormGroup, FormControl, Row, Col, Button, Container, Card} from "react-bootstrap";
+import ClipLoader from "react-spinners/ClipLoader";
+import { searchArtists } from '../../actions/artists'
+import ArtistsGrid from "./artist-grid";
+import ArtistEventsGrid from "./artist-events-grid";
 
 export default function SingleSearchPage() {
   const [state, setState] = useState({
     show_loader: false,
-    search_results: [
-      {
-      name: 'imran',
-      image: null,
-      link: 'www.imran.com'
-      },
-      {
-      name: 'imran',
-      image: null,
-      link: 'www.imran.com'
-      },
-      {
-      name: 'imran',
-      image: null,
-      link: 'www.imran.com'
-      }
-    ],
+    search_results: [],
     search_query: '',
+    selected_artist:''
   });
-
-  useEffect(() => {
-  }, []);
-
-  useEffect(() => {
-  }, [state.search_query]);
+  const override = css`
+  display: block;
+  margin: 0 auto;
+  border-color: cornflowerblue;
+`;
 
   const changeSearchPageState = (name, value) => {
-    if (name === 'search_query' && value.length > 3) {
-      let state_to_update = Object.assign({}, state);
+    let state_to_update = $.extend(true, {}, state);
+    if (name === 'search_query' && value.length > 0) {
+      state_to_update['show_loader'] = true;
+      setState(state_to_update)
+      getArtistsSearchResult(value);
+    } else {
       state_to_update[name] = value;
-      setState(prevState => ({...prevState, state: state_to_update}))
+      setState(state_to_update)
     }
   };
 
-  const getArtistsSearchResult = () => {
-
+  const getArtistsSearchResult = (search_query) => {
+    let state_to_update = $.extend(true, {}, state);
+    searchArtists(search_query, 'test').then(response => {
+      const searched_data = []
+      if (response !== '' && !response.error ) searched_data.push(response)
+      state_to_update['show_loader'] = false;
+      state_to_update['search_query'] = search_query;
+      state_to_update['search_results'] = searched_data
+      setState(state_to_update)
+    }).catch(error => {
+      state_to_update['show_loader'] = false;
+      state_to_update['search_query'] = search_query;
+      setState(state_to_update)
+      console.log(error)
+    })
   };
 
+
   return (
-    <div>
-      <div>
-        <Row>
-          <Col md={6}>
-            <FormGroup>
-              <FormControl
-                name='search_query'
-                type='text'
-                placeholder="Enter artist name...."
-                onChange={(e) => {
-                  changeSearchPageState(e.target.name, e.target.value)
-                }}
-              />
-            </FormGroup>
-          </Col>
-        </Row>
-        <div>
-          <Row>
-          {!state.show_loader && state.search_results &&
-          state.search_results.length > 0 && state.search_results.map( artist => {
-            return (
-              <Col md={4}>
-                <Card style={{ width: '18rem' }}>
-                  <Card.Img variant="top" src='https://picsum.photos/200/300' />
-                  <Card.Body>
-                    <Card.Title>{artist.name}</Card.Title>
-                  </Card.Body>
-                  <Card.Body>
-                    <Card.Link href={artist.link}>{artist.link}</Card.Link>
-                  </Card.Body>
-                </Card>
-              </Col>)
-          })}
-          </Row>
+    <Container>
+      <Row>
+        <div className={styles.searchBarWrapper}>
+          {state.selected_artist === '' && <FormGroup>
+            <FormControl
+              className={styles.searchBar}
+              name='search_query'
+              type='text'
+              placeholder="Search artist"
+              onChange={(e) => {
+                changeSearchPageState(e.target.name, e.target.value)
+              }}
+            />
+          </FormGroup>}
+          {state.selected_artist !== '' &&
+          <Button
+            variant="success"
+            onClick={() => {changeSearchPageState('selected_artist', '')}}
+            >Go back to search</Button>}
         </div>
-      </div>
-    </div>
+      </Row>
+      <Row>
+        {!state.show_loader && state.search_results &&
+        <div>
+          <ArtistsGrid
+            searchedArtists={state.search_results}
+            search_query={state.search_query}
+            changeSearchPageState={changeSearchPageState}
+          />
+        </div>}
+        {!state.show_loader && state.search_query !== '' && state.search_results && state.search_results.length === 0 &&
+        <p> No Artists Found </p>
+        }
+      </Row>
+      {state.show_loader === true && <ClipLoader
+          color={"#ffffff"}
+          css={override}
+          loading={state.show_loader}
+          size={30}
+      />}
+      {!state.show_loader && state.selected_artist !=='' &&
+      <ArtistEventsGrid
+        artist={state.selected_artist}
+        changeSearchPageState={changeSearchPageState}
+      />}
+    </Container>
   );
 };
