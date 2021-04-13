@@ -5,9 +5,9 @@ import styles from '../../styles/single-page-search.module.scss'
 import $ from 'jquery';
 import moment from 'moment-timezone';
 
-export default function ArtistEventsGrid({artist, changeSearchPageState}) {
+export default function ArtistEventsGrid({artist, cookies, setCookie}) {
   const [state, setState] = useState({
-    events: null
+    events: cookies['events'] ? cookies['events'] : null
   });
 
   useEffect(() => {
@@ -15,6 +15,7 @@ export default function ArtistEventsGrid({artist, changeSearchPageState}) {
     getArtistEvents(artist, 'test').then(response => {
       const events = response
       state_to_update['events'] = events;
+      setCookie('events', events, { path: '/' });
       setState(state_to_update);
     }).catch(error => {
       console.log(error)

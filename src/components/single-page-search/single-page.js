@@ -4,16 +4,18 @@ import styles from '../../styles/single-page-search.module.scss'
 import React, {useState, useEffect} from 'react';
 import {FormGroup, FormControl, Row, Col, Button, Container, Card} from "react-bootstrap";
 import ClipLoader from "react-spinners/ClipLoader";
+import { useCookies } from 'react-cookie';
 import { searchArtists } from '../../actions/artists'
 import ArtistsGrid from "./artist-grid";
 import ArtistEventsGrid from "./artist-events-grid";
 
 export default function SingleSearchPage() {
+  const [cookies, setCookie] = useCookies(['name']);
   const [state, setState] = useState({
     show_loader: false,
-    search_results: [],
+    search_results: cookies.search_results ? cookies.search_results : [],
     search_query: '',
-    selected_artist:''
+    selected_artist: cookies.selected_artist ? cookies.selected_artist : ''
   });
   const override = css`
   display: block;
@@ -41,6 +43,7 @@ export default function SingleSearchPage() {
       state_to_update['show_loader'] = false;
       state_to_update['search_query'] = search_query;
       state_to_update['search_results'] = searched_data
+      setCookie('search_results', searched_data, { path: '/' });
       setState(state_to_update)
     }).catch(error => {
       state_to_update['show_loader'] = false;
@@ -69,7 +72,7 @@ export default function SingleSearchPage() {
           {state.selected_artist !== '' &&
           <Button
             variant="success"
-            onClick={() => {changeSearchPageState('selected_artist', '')}}
+            onClick={() => {setCookie('selected_artist', '', { path: '/' }); changeSearchPageState('selected_artist', '')}}
             >Go back to search</Button>}
         </div>
       </Row>
@@ -80,6 +83,7 @@ export default function SingleSearchPage() {
             searchedArtists={state.search_results}
             search_query={state.search_query}
             changeSearchPageState={changeSearchPageState}
+            setCookie={setCookie}
           />
         </div>}
         {!state.show_loader && state.search_query !== '' && state.search_results && state.search_results.length === 0 &&
@@ -95,7 +99,8 @@ export default function SingleSearchPage() {
       {!state.show_loader && state.selected_artist !=='' &&
       <ArtistEventsGrid
         artist={state.selected_artist}
-        changeSearchPageState={changeSearchPageState}
+        cookies={cookies}
+        setCookie={setCookie}
       />}
     </Container>
   );
